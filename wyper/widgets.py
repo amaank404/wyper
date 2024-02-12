@@ -179,7 +179,7 @@ class WidgetWithChildren(Widget):
 
 
 class AppRoot(WidgetWithChild):
-    def __init__(self, title: str, icon: pygame.surface.Surface, fps: int = 60, *, child: Widget) -> None:
+    def __init__(self, title: str, icon: pygame.surface.Surface, fps: int = 60, init_resolution: tuple = (800, 500), *, child: Widget) -> None:
         super().__init__()
         self.child = child
         self.layoutobject = lh.LayoutObjectStack()
@@ -190,7 +190,7 @@ class AppRoot(WidgetWithChild):
 
         BuildContext().root_widget = self
 
-        self.window = pygame.display.set_mode((_scale(800), _scale(500)), pygame.RESIZABLE)
+        self.window = pygame.display.set_mode((_scale(init_resolution[0]), _scale(init_resolution[1])), pygame.RESIZABLE)
         pygame.display.set_caption(title)
         pygame.display.set_icon(icon)
 
