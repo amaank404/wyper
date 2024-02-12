@@ -571,7 +571,7 @@ class Slider(Button):
 
         pygame.draw.line(window, colors.c_disabled, self.layoutobject.rendered.with_offset(x=_scale(5), y=_scale(5)), self.layoutobject.rendered.with_offset(x=self.layoutobject.rendered.dim[0]-_scale(5), y=_scale(5)), _scale(4))
         if self.value != 0:
-            pygame.draw.line(window, colors.c_accent, self.layoutobject.rendered.with_offset(x=_scale(5), y=_scale(5)), self.layoutobject.rendered.with_offset(x=_scale(5)+int((self.value/100)*(self.layoutobject.rendered.dim[0]-_scale(10))), y=_scale(5)), _scale(4))
+            pygame.draw.line(window, colors.c_disabled if self.disabled else colors.c_accent, self.layoutobject.rendered.with_offset(x=_scale(5), y=_scale(5)), self.layoutobject.rendered.with_offset(x=_scale(5)+int((self.value/100)*(self.layoutobject.rendered.dim[0]-_scale(10))), y=_scale(5)), _scale(4))
 
         pygame.gfxdraw.aacircle(window, *self.layoutobject.rendered.with_offset(x=_scale(5)+int((self.value/100)*(self.layoutobject.rendered.dim[0]-_scale(10))), y=_scale(5)), _scale(5), colors.c_disabledtext if self.disabled else colors.c_accent)
         pygame.gfxdraw.filled_circle(window, *self.layoutobject.rendered.with_offset(x=_scale(5)+int((self.value/100)*(self.layoutobject.rendered.dim[0]-_scale(10))), y=_scale(5)), _scale(5), colors.c_disabledtext if self.disabled else colors.c_accent)
