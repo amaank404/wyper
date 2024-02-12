@@ -14,6 +14,7 @@ the given objects accordingly.
 import enum
 from typing import List, Tuple
 import textwrap
+import logging
 
 import pygame
 
@@ -60,7 +61,7 @@ class LayoutObject():
         def decide(val, unit, axis, space):
             if unit == LayoutUnit.ABSOLUTE:
                 if val > space:
-                    print(f"Warning: A LayoutObject with absolute sizing {val} requires more space than alloted space {space} in axis {axis}")
+                    logging.warn(f"A LayoutObject with absolute sizing {val} requires more space than alloted space {space} in axis {axis}")
                     return space
                 else:
                     return val
@@ -68,7 +69,7 @@ class LayoutObject():
                 return space
             elif unit == LayoutUnit.PERCENTAGE:
                 if val > 100:
-                    print(f"Warning: A LayoutObject with percentage sizing {val} has exceeded 100")
+                    logging.warn(f"Warning: A LayoutObject with percentage sizing {val} has exceeded 100")
                     return space
                 else:
                     return int(space*(val/100))
@@ -216,7 +217,7 @@ class LayoutObjectList(LayoutObject):
             curspacex -= tw
             if curspacex < 0:
                 curspacex = 0
-                print("Warning: Probably, total children percentages add up to more than 100 and have overfilled the remaining space. Some visual overflow may be seen")
+                logging.warn("Probably, total children percentages add up to more than 100 and have overfilled the remaining space. Some visual overflow may be seen")
 
             totalflex = 0
             for child in self.children:
@@ -268,7 +269,7 @@ class LayoutObjectList(LayoutObject):
             curspacey -= th
             if curspacey < 0:
                 curspacey = 0
-                print("Warning: Probably, total children percentages add up to more than 100 and have overfilled the remaining space. Some visual overflow may be seen")
+                logging.warn("Probably, total children percentages add up to more than 100 and have overfilled the remaining space. Some visual overflow may be seen")
 
             totalflex = 0
             for child in self.children:

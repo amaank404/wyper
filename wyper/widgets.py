@@ -8,7 +8,7 @@ import math
 import enum
 
 from . import layouthandler as lh
-from .colors import *
+from . import colors
 
 # Defining the position type
 Position = Union[Tuple[int, int], pygame.Rect]
@@ -200,7 +200,7 @@ class AppRoot(WidgetWithChild):
         self.recalculate_layout(*pygame.display.get_window_size(), (0, 0))
     
     def render(self, window: pygame.SurfaceType):
-        window.fill(c_windowbg)
+        window.fill(colors.c_windowbg)
         self.child.render(window)
 
     def run(self, debug: bool = False) -> None:
@@ -289,7 +289,7 @@ class VSep(Widget):
     def render(self, window) -> None:
         pygame.draw.line(
             window,
-            c_inversewindowbg,
+            colors.c_inversewindowbg,
             (_scale(1)+self.layoutobject.rendered.pos[0], self.sep+self.layoutobject.rendered.pos[1]),
             (_scale(1)+self.layoutobject.rendered.pos[0], self.layoutobject.rendered.dim[1]-self.sep+self.layoutobject.rendered.pos[1]),
             width=_scale(1)
@@ -305,7 +305,7 @@ class HSep(Widget):
     def render(self, window) -> None:
         pygame.draw.line(
             window,
-            c_inversewindowbg,
+            colors.c_inversewindowbg,
             (self.sep+self.layoutobject.rendered.pos[0], _scale(1)+self.layoutobject.rendered.pos[1]),
             (self.layoutobject.rendered.dim[0]-self.sep+self.layoutobject.rendered.pos[0], _scale(1)+self.layoutobject.rendered.pos[1]),
             width=_scale(1)
@@ -361,7 +361,7 @@ class Button(Widget):
 
 class MenuItemButton(Button):
     def __init__(self, text: str) -> None:
-        self.textrendered = BuildContext().get_font(_scale(16)).render(text, True, c_primarytext)
+        self.textrendered = BuildContext().get_font(_scale(16)).render(text, True, colors.c_primarytext)
         self.padding_width = _scale(16)
         self.padding_height = _scale(4)
         super().__init__(size=f"{self.padding_width*2 + self.textrendered.get_width()},{self.padding_height*2 + self.textrendered.get_height()}")
@@ -371,7 +371,7 @@ class MenuItemButton(Button):
         self._hoversurf.set_alpha(30)
         
     def render(self, window: pygame.SurfaceType):
-        pygame.draw.rect(window, c_primary, self.layoutobject.rendered.pgrect)
+        pygame.draw.rect(window, colors.c_primary, self.layoutobject.rendered.pgrect)
         window.blit(self.textrendered, (self.layoutobject.rendered.pos[0]+self.padding_width, self.layoutobject.rendered.pos[1]+self.padding_height))
         if self.pressed:
             self._hoversurf.set_alpha(50)
@@ -396,8 +396,8 @@ class _MenuSep(Widget):
     
     def after_layout_recalculation(self):
         self._surf = pygame.Surface(self.layoutobject.rendered.dim)
-        self._surf.fill(c_primary)
-        pygame.draw.line(self._surf, c_inverseprimary, (_scale(1), _scale(8)), (_scale(1), self.layoutobject.rendered.dim[1]-_scale(8)), width=_scale(1))
+        self._surf.fill(colors.c_primary)
+        pygame.draw.line(self._surf, colors.c_inverseprimary, (_scale(1), _scale(8)), (_scale(1), self.layoutobject.rendered.dim[1]-_scale(8)), width=_scale(1))
     
     def render(self, window: pygame.SurfaceType):
         window.blit(self._surf, self.layoutobject.rendered.pos)
@@ -413,7 +413,7 @@ class MenuBar(Row):
                 self.add_child(_MenuSep(), cancel_recalculate=True)
 
     def render(self, window: pygame.SurfaceType):
-        pygame.draw.rect(window, c_primary, self.layoutobject.rendered.pgrect)
+        pygame.draw.rect(window, colors.c_primary, self.layoutobject.rendered.pgrect)
         super().render(window)
 
 class ImageView(Widget):
@@ -430,7 +430,7 @@ class ImageView(Widget):
 
     def after_layout_recalculation(self):
         if self.image is None:
-            self.image_view = BuildContext().get_font(_scale(64), "bold").render("No Image", True, c_disabledtext)
+            self.image_view = BuildContext().get_font(_scale(64), "bold").render("No Image", True, colors.c_disabledtext)
         else:
             self.image_view = pygame.transform.smoothscale(self.image, self.image.get_rect().fit(self.layoutobject.rendered.pgrect).size)
         self.imrect = self.image_view.get_rect()
@@ -450,7 +450,7 @@ class PILImageView(ImageView):
     
     def after_layout_recalculation(self):
         if self.image is None:
-            self.image_view = BuildContext().get_font(_scale(64), "bold").render("No Image", True, c_disabledtext)
+            self.image_view = BuildContext().get_font(_scale(64), "bold").render("No Image", True, colors.c_disabledtext)
         else:
             self.image_view = pygame.transform.smoothscale(_PILImagetopgsurf(self.image), pygame.Rect((0, 0), self.image.size).fit(self.layoutobject.rendered.pgrect).size)
         self.imrect = self.image_view.get_rect()
@@ -469,7 +469,7 @@ class StatusBar(Widget):
         self._render_status()
 
     def _render_status(self):
-        self.statussurf: pygame.Surface = BuildContext().get_font(_scale(10)).render(', '.join(self.status.values()), True, c_primarytext)
+        self.statussurf: pygame.Surface = BuildContext().get_font(_scale(10)).render(', '.join(self.status.values()), True, colors.c_primarytext)
 
     def unset(self, statuskey: str):
         if statuskey in self.status:
@@ -478,7 +478,7 @@ class StatusBar(Widget):
 
 
     def render(self, window: pygame.SurfaceType):
-        pygame.draw.rect(window, c_primary, self.layoutobject.rendered.pgrect)
+        pygame.draw.rect(window, colors.c_primary, self.layoutobject.rendered.pgrect)
         window.blit(self.statussurf, self.layoutobject.rendered.with_offset(x=_scale(4), y=_scale(2)))
 
 
@@ -488,7 +488,7 @@ class PillButton(Button):
         self.action = action
         self.disabled = disabled
         self.labelstr = label
-        self.labelsurf = BuildContext().get_font(_scale(16), "bold").render(label, True, c_disabledtext if disabled else c_accenttext)
+        self.labelsurf = BuildContext().get_font(_scale(16), "bold").render(label, True, colors.c_disabledtext if disabled else colors.c_accenttext)
         self.labelsurfrect = self.labelsurf.get_rect()
 
         if hsize is None:
@@ -504,17 +504,17 @@ class PillButton(Button):
         self.labelsurfrect.center = self.layoutobject.rendered.pgrect.center
         self._hoversurf.fill((0, 0, 0, 0))
         self._pressedsurf.fill((0, 0, 0, 0))
-        self._drawshape(self._hoversurf, c_accent, self.layoutobject.rendered.with_poszero())
+        self._drawshape(self._hoversurf, colors.c_accent, self.layoutobject.rendered.with_poszero())
         mask = pygame.mask.from_surface(self._hoversurf)
         mask.to_surface(self._hoversurf, setcolor=(0, 0, 0, 30), unsetcolor=(0, 0, 0, 0))
         mask.to_surface(self._pressedsurf, setcolor=(0, 0, 0, 50), unsetcolor=(0, 0, 0, 0))
         
     def set_disabled(self, disabled: bool):
         super().set_disabled(disabled)
-        self.labelsurf = BuildContext().get_font(_scale(16), "bold").render(self.labelstr, True, c_disabledtext if disabled else c_accenttext)
+        self.labelsurf = BuildContext().get_font(_scale(16), "bold").render(self.labelstr, True, colors.c_disabledtext if disabled else colors.c_accenttext)
 
     def render(self, window: pygame.SurfaceType):
-        self._drawshape(window, c_disabled if self.disabled else c_accent, self.layoutobject.rendered)
+        self._drawshape(window, colors.c_disabled if self.disabled else colors.c_accent, self.layoutobject.rendered)
         window.blit(self.labelsurf, self.labelsurfrect)
         if not self.disabled:
             if self.pressed:
@@ -569,12 +569,12 @@ class Slider(Button):
         if self.value < 0:
             self.value = 0
 
-        pygame.draw.line(window, c_disabled, self.layoutobject.rendered.with_offset(x=_scale(5), y=_scale(5)), self.layoutobject.rendered.with_offset(x=self.layoutobject.rendered.dim[0]-_scale(5), y=_scale(5)), _scale(4))
+        pygame.draw.line(window, colors.c_disabled, self.layoutobject.rendered.with_offset(x=_scale(5), y=_scale(5)), self.layoutobject.rendered.with_offset(x=self.layoutobject.rendered.dim[0]-_scale(5), y=_scale(5)), _scale(4))
         if self.value != 0:
-            pygame.draw.line(window, c_accent, self.layoutobject.rendered.with_offset(x=_scale(5), y=_scale(5)), self.layoutobject.rendered.with_offset(x=_scale(5)+int((self.value/100)*(self.layoutobject.rendered.dim[0]-_scale(10))), y=_scale(5)), _scale(4))
+            pygame.draw.line(window, colors.c_accent, self.layoutobject.rendered.with_offset(x=_scale(5), y=_scale(5)), self.layoutobject.rendered.with_offset(x=_scale(5)+int((self.value/100)*(self.layoutobject.rendered.dim[0]-_scale(10))), y=_scale(5)), _scale(4))
 
-        pygame.gfxdraw.aacircle(window, *self.layoutobject.rendered.with_offset(x=_scale(5)+int((self.value/100)*(self.layoutobject.rendered.dim[0]-_scale(10))), y=_scale(5)), _scale(5), c_disabledtext if self.disabled else c_accent)
-        pygame.gfxdraw.filled_circle(window, *self.layoutobject.rendered.with_offset(x=_scale(5)+int((self.value/100)*(self.layoutobject.rendered.dim[0]-_scale(10))), y=_scale(5)), _scale(5), c_disabledtext if self.disabled else c_accent)
+        pygame.gfxdraw.aacircle(window, *self.layoutobject.rendered.with_offset(x=_scale(5)+int((self.value/100)*(self.layoutobject.rendered.dim[0]-_scale(10))), y=_scale(5)), _scale(5), colors.c_disabledtext if self.disabled else colors.c_accent)
+        pygame.gfxdraw.filled_circle(window, *self.layoutobject.rendered.with_offset(x=_scale(5)+int((self.value/100)*(self.layoutobject.rendered.dim[0]-_scale(10))), y=_scale(5)), _scale(5), colors.c_disabledtext if self.disabled else colors.c_accent)
 
     def handle_mouse_movement(self, pos: Tuple[int, int]):
         self.lastknownhoverpos = pos
@@ -602,7 +602,7 @@ class NotificationPill(Widget):
         super().__init__()
 
         self.layoutobject = lh.LayoutObject(x=0,y=0)
-        self.notificationsurf = BuildContext().get_font(_scale(12)).render(notification, True, c_windowtext)
+        self.notificationsurf = BuildContext().get_font(_scale(12)).render(notification, True, colors.c_white)
         self._animationtime = 45
         self._currenttime = 0
         self._notificationlength = len(notification)*4
@@ -809,16 +809,16 @@ class CropView(Container, Button):
             self.prevhovering = self.hovering
             
 
-            pygame.draw.rect(window, c_accent, tl)
-            pygame.draw.rect(window, c_accent, bl)
-            pygame.draw.rect(window, c_accent, tr)
-            pygame.draw.rect(window, c_accent, br)
+            pygame.draw.rect(window, colors.c_accent, tl)
+            pygame.draw.rect(window, colors.c_accent, bl)
+            pygame.draw.rect(window, colors.c_accent, tr)
+            pygame.draw.rect(window, colors.c_accent, br)
             
-            pygame.draw.rect(window, c_white, self.boxrect, _scale(2))
-            pygame.draw.line(window, c_white, (self.boxrect.left+self.boxrect.w//3, self.boxrect.top), (self.boxrect.left+self.boxrect.w//3, self.boxrect.bottom), _scale(1))
-            pygame.draw.line(window, c_white, (self.boxrect.left+2*self.boxrect.w//3, self.boxrect.top), (self.boxrect.left+2*self.boxrect.w//3, self.boxrect.bottom), _scale(1))
-            pygame.draw.line(window, c_white, (self.boxrect.left, self.boxrect.top+self.boxrect.h//3), (self.boxrect.right, self.boxrect.top+self.boxrect.h//3), _scale(1))
-            pygame.draw.line(window, c_white, (self.boxrect.left, self.boxrect.top+2*self.boxrect.h//3), (self.boxrect.right, self.boxrect.top+2*self.boxrect.h//3), _scale(1))
+            pygame.draw.rect(window, colors.c_crop, self.boxrect, _scale(2))
+            pygame.draw.line(window, colors.c_crop, (self.boxrect.left+self.boxrect.w//3, self.boxrect.top), (self.boxrect.left+self.boxrect.w//3, self.boxrect.bottom), _scale(1))
+            pygame.draw.line(window, colors.c_crop, (self.boxrect.left+2*self.boxrect.w//3, self.boxrect.top), (self.boxrect.left+2*self.boxrect.w//3, self.boxrect.bottom), _scale(1))
+            pygame.draw.line(window, colors.c_crop, (self.boxrect.left, self.boxrect.top+self.boxrect.h//3), (self.boxrect.right, self.boxrect.top+self.boxrect.h//3), _scale(1))
+            pygame.draw.line(window, colors.c_crop, (self.boxrect.left, self.boxrect.top+2*self.boxrect.h//3), (self.boxrect.right, self.boxrect.top+2*self.boxrect.h//3), _scale(1))
 
             
         return dims
